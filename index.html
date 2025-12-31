@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Particle Canvas</title>
+    <title>Interactive Particle Canvas with Sound</title>
     <style>
         * {
             margin: 0;
@@ -67,6 +67,11 @@
             transform: translateY(0);
         }
 
+        button.active {
+            background: #667eea;
+            color: white;
+        }
+
         #canvas {
             position: fixed;
             top: 0;
@@ -105,6 +110,17 @@
             border-radius: 10px;
             cursor: pointer;
         }
+
+        .sound-toggle {
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .sound-status {
+            color: white;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -117,15 +133,20 @@
             <button onclick="changeColor()">Random Color</button>
             <button onclick="clearCanvas()">Clear Canvas</button>
             <button onclick="toggleParticles()">Toggle Particles</button>
+            <button id="soundToggle" class="active" onclick="toggleSound()">🔊 Sound On</button>
             
             <div class="color-picker">
                 <label for="colorInput">Pick Color:</label>
                 <input type="color" id="colorInput" value="#ffffff">
             </div>
+
+            <div class="sound-status">
+                Move your mouse & click to create particles with sound!
+            </div>
         </div>
         
         <div class="info">
-            Move your mouse to create particles!
+            🎵 Every particle creates a unique musical note
         </div>
     </div>
 
@@ -133,6 +154,7 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const colorInput = document.getElementById('colorInput');
+        const soundToggle = document.getElementById('soundToggle');
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -140,6 +162,10 @@
         let particles = [];
         let currentColor = '#ffffff';
         let particlesEnabled = true;
+        let soundEnabled = true;
+
+        // Web Audio API setup
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
         class Particle {
             constructor(x, y) {
@@ -166,6 +192,81 @@
             }
         }
 
+        function playMeditativeSound(frequency = 440) {
+            if (!soundEnabled) return;
+
+            const now = audioContext.currentTime;
+            const duration = 0.5;
+
+            // Create oscillator for tone
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            const filter = audioContext.createBiquadFilter();
+
+            // Set up the filter for smooth, meditative quality
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(2000, now);
+
+            // Oscillator setup - use sine for smooth, meditative sound
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(frequency, now);
+            oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.8, now + duration);
+
+            // Envelope - slow attack and release for meditative feel
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.3, now + 0.1); // Attack
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration); // Release
+
+            // Connect nodes
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            // Start and stop
+            oscillator.start(now);
+            oscillator.stop(now + duration);
+        }
+
+        function playClickSound() {
+            if (!soundEnabled) return;
+
+            const now = audioContext.currentTime;
+            const duration = 0.3;
+
+            // Create multiple tones for a richer sound
+            for (let i = 0; i < 3; i++) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                const filter = audioContext.createBiquadFilter();
+
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(2500, now);
+
+                const baseFreq = 200 + i * 150;
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(baseFreq, now);
+                oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 0.6, now + duration);
+
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+                oscillator.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.start(now);
+                oscillator.stop(now + duration);
+            }
+        }
+
+        function playRandomMeditativeNote() {
+            // Pentatonic scale frequencies for harmonious sounds
+            const pentatonicFreqs = [261.63, 293.66, 329.63, 392.00, 440.00, 493.88, 587.33, 659.25, 783.99];
+            const frequency = pentatonicFreqs[Math.floor(Math.random() * pentatonicFreqs.length)];
+            playMeditativeSound(frequency);
+        }
+
         function handleParticles() {
             for (let i = 0; i < particles.length; i++) {
                 particles[i].update();
@@ -190,6 +291,9 @@
             if (particlesEnabled) {
                 for (let i = 0; i < 5; i++) {
                     particles.push(new Particle(e.x, e.y));
+                    if (i === 0) {
+                        playRandomMeditativeNote();
+                    }
                 }
             }
         });
@@ -198,6 +302,7 @@
             for (let i = 0; i < 30; i++) {
                 particles.push(new Particle(e.x, e.y));
             }
+            playClickSound();
         });
 
         colorInput.addEventListener('input', (e) => {
@@ -208,6 +313,7 @@
             const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#a29bfe', '#fd79a8', '#fdcb6e'];
             currentColor = colors[Math.floor(Math.random() * colors.length)];
             colorInput.value = currentColor;
+            playRandomMeditativeNote();
         }
 
         function clearCanvas() {
@@ -218,6 +324,12 @@
 
         function toggleParticles() {
             particlesEnabled = !particlesEnabled;
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            soundToggle.textContent = soundEnabled ? '🔊 Sound On' : '🔇 Sound Off';
+            soundToggle.classList.toggle('active');
         }
 
         window.addEventListener('resize', () => {
