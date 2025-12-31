@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Particle Canvas with Random Media</title>
+    <title>Nexus - Premium Interactive Media Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;700;800;900&family=Space+Mono:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,78 +12,46 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+            --primary: #00d4ff;
+            --secondary: #ff006e;
+            --dark: #0a0e27;
+            --light: #f5f7ff;
+            --accent: #7f39fb;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Raleway', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d1b69 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            color: #fff;
+            position: relative;
         }
 
-        .container {
-            text-align: center;
-            z-index: 10;
+        /* Animated background with moving gradients */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(127, 57, 251, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(255, 0, 110, 0.1) 0%, transparent 50%);
+            animation: moveGradient 15s ease infinite;
+            z-index: 0;
         }
 
-        h1 {
-            color: white;
-            font-size: 2.8em;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            animation: fadeIn 1s ease-in;
-        }
-
-        .controls {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        .control-section {
-            margin-bottom: 15px;
-        }
-
-        .control-section label {
-            color: white;
-            font-size: 1em;
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        button {
-            background: white;
-            color: #667eea;
-            border: none;
-            padding: 12px 25px;
-            font-size: 1em;
-            border-radius: 50px;
-            cursor: pointer;
-            margin: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            font-weight: 600;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            background: #f0f0f0;
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        button.active {
-            background: #667eea;
-            color: white;
+        @keyframes moveGradient {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-100px, -100px); }
         }
 
         #canvas {
@@ -100,145 +69,405 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 2;
+            z-index: 3;
             display: none;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(10, 14, 39, 0.98);
+            backdrop-filter: blur(5px);
         }
 
-        .info {
-            color: white;
-            margin-top: 15px;
-            font-size: 1.05em;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        .container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            animation: slideInDown 1s ease-out;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .color-picker {
-            margin: 10px 0;
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5em;
+            font-weight: 900;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7f39fb 50%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+            animation: glitch 3s ease-in-out infinite;
         }
 
-        .color-picker label {
-            color: white;
-            margin-right: 10px;
-            font-size: 1em;
+        @keyframes glitch {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(2px); }
+            75% { transform: translateX(-2px); }
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            animation: slideInUp 1s ease-out 0.2s both;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 8px 60px rgba(0, 212, 255, 0.15), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            max-width: 800px;
+            animation: slideInUp 1s ease-out 0.4s both;
+        }
+
+        .control-section {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .control-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .control-label {
+            display: block;
+            color: rgba(0, 212, 255, 0.8);
+            font-size: 0.95em;
+            margin-bottom: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(127, 57, 251, 0.2));
+            color: #00d4ff;
+            border: 2px solid #00d4ff;
+            padding: 12px 25px;
+            font-size: 0.95em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+            border-color: #7f39fb;
+            color: #7f39fb;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(127, 57, 251, 0.3));
+        }
+
+        button:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        button.active {
+            background: linear-gradient(135deg, #00d4ff, #7f39fb);
+            color: #000;
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+        }
+
+        .color-picker-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .color-picker-group label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95em;
         }
 
         #colorInput {
-            width: 60px;
-            height: 40px;
-            border: none;
-            border-radius: 10px;
+            width: 70px;
+            height: 45px;
+            border: 2px solid #00d4ff;
+            border-radius: 12px;
             cursor: pointer;
-            vertical-align: middle;
+            transition: all 0.3s ease;
         }
 
-        .media-controls {
-            margin-top: 15px;
-            color: white;
-            font-size: 0.9em;
+        #colorInput:hover {
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            transform: scale(1.1);
         }
 
         .video-speed-control {
-            margin: 10px 0;
+            margin: 15px 0;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
         .video-speed-control label {
-            color: white;
-            margin-right: 10px;
-            font-size: 1em;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95em;
         }
 
         .video-speed-control input[type="range"] {
             width: 150px;
             cursor: pointer;
-            vertical-align: middle;
+            accent-color: #00d4ff;
         }
 
-        .sound-status {
-            color: white;
-            font-size: 0.95em;
-            margin-top: 10px;
+        .info {
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 20px;
+            font-size: 1em;
+            animation: slideInUp 1s ease-out 0.6s both;
+            letter-spacing: 0.5px;
+        }
+
+        .status-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9em;
+            margin-top: 15px;
+            animation: slideInUp 1s ease-out 0.8s both;
         }
 
         .close-hint {
             position: fixed;
-            bottom: 30px;
+            bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9em;
+            color: rgba(0, 212, 255, 0.7);
+            font-size: 0.95em;
             text-align: center;
-            z-index: 3;
+            z-index: 4;
             display: none;
+            animation: pulse 2s ease-in-out infinite;
         }
 
         .close-hint.show {
             display: block;
         }
 
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
         .hidden-media {
             display: none;
+        }
+
+        /* Floating elements */
+        .float-element {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .float-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.15), transparent);
+            border-radius: 50%;
+            top: 10%;
+            left: 5%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .float-2 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(127, 57, 251, 0.15), transparent);
+            border-radius: 50%;
+            bottom: 15%;
+            right: 5%;
+            animation: float 10s ease-in-out infinite 2s;
+        }
+
+        .float-3 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(255, 0, 110, 0.1), transparent);
+            border-radius: 50%;
+            top: 50%;
+            right: 10%;
+            animation: float 12s ease-in-out infinite 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-30px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            h1 {
+                font-size: 3.5em;
+            }
+            .controls {
+                padding: 30px;
+                max-width: 90vw;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+            .subtitle {
+                font-size: 1em;
+            }
+            .controls {
+                padding: 20px;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+            .button-group {
+                gap: 8px;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #00d4ff;
+            border-radius: 50%;
+            animation: loading 1.4s infinite;
+        }
+
+        @keyframes loading {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
         }
     </style>
 </head>
 <body>
+    <!-- Floating background elements -->
+    <div class="float-element float-1"></div>
+    <div class="float-element float-2"></div>
+    <div class="float-element float-3"></div>
+
     <canvas id="canvas"></canvas>
     <canvas id="mediaCanvas"></canvas>
     
-    <div class="close-hint" id="closeHint">Click anywhere or press ESC to close</div>
+    <div class="close-hint" id="closeHint">✕ Click anywhere or press ESC to close</div>
 
     <div class="container">
-        <h1>🎨 Particle Canvas Pro</h1>
+        <h1>✨ NEXUS ✨</h1>
+        <p class="subtitle">Interactive Particle Experience</p>
         
         <div class="controls">
-            <!-- Particle Controls -->
+            <!-- Particle Effects -->
             <div class="control-section">
-                <label>Particle Effects</label>
-                <button onclick="changeColor()">🎨 Random Color</button>
-                <button onclick="clearCanvas()">🗑️ Clear Canvas</button>
-                <button onclick="toggleParticles()">✨ Toggle Particles</button>
+                <label class="control-label">⚛️ Particle Effects</label>
+                <div class="button-group">
+                    <button onclick="changeColor()">🎨 Random Color</button>
+                    <button onclick="clearCanvas()">🗑️ Clear</button>
+                    <button onclick="toggleParticles()">✨ Toggle</button>
+                </div>
             </div>
 
             <!-- Sound Controls -->
             <div class="control-section">
-                <label>Audio</label>
-                <button id="soundToggle" class="active" onclick="toggleSound()">🔊 Sound On</button>
+                <label class="control-label">🎵 Audio Control</label>
+                <div class="button-group">
+                    <button id="soundToggle" class="active" onclick="toggleSound()">🔊 Sound On</button>
+                </div>
             </div>
 
             <!-- Color Picker -->
             <div class="control-section">
-                <div class="color-picker">
-                    <label for="colorInput">Pick Color:</label>
-                    <input type="color" id="colorInput" value="#ffffff">
+                <label class="control-label">🎭 Color Customization</label>
+                <div class="color-picker-group">
+                    <label for="colorInput">Select:</label>
+                    <input type="color" id="colorInput" value="#00d4ff">
                 </div>
             </div>
 
             <!-- Random Media Display -->
             <div class="control-section">
-                <label>Display Random Media</label>
-                <button onclick="displayRandomImage()">📸 Show Random Image</button>
-                <button onclick="displayRandomVideo()">🎬 Show Random Video</button>
+                <label class="control-label">📺 Media Gallery</label>
+                <div class="button-group">
+                    <button onclick="displayRandomImage()">📸 Random Image</button>
+                    <button onclick="displayRandomVideo()">🎬 Random Video</button>
+                </div>
             </div>
 
-            <!-- Video Speed Control (hidden by default) -->
+            <!-- Video Speed Control -->
             <div class="video-speed-control" id="speedControl" style="display: none;">
-                <label for="videoSpeed">Playback Speed:</label>
+                <label for="videoSpeed">Speed:</label>
                 <input type="range" id="videoSpeed" min="0.5" max="3" step="0.5" value="1">
-                <span id="speedValue">1x</span>
+                <span id="speedValue" style="color: #00d4ff; font-weight: 600;">1x</span>
             </div>
 
-            <div class="sound-status">
-                🎵 Move your mouse & click to create particles with sound!<br>
-                📸 Click "Show Random Image/Video" to display beautiful media instantly!
+            <div class="status-text">
+                🎨 Move mouse • Click for burst • 📸 Gallery with one click • 🎵 Interactive sound
             </div>
         </div>
         
         <div class="info">
-            🎵 Every particle creates a unique musical note | 🎨 Experience Interactive Media
+            💫 Crafted for Excellence • Premium Interactive Media Platform 💫
         </div>
     </div>
 
@@ -249,7 +478,7 @@
     <script>
         const canvas = document.getElementById('canvas');
         const mediaCanvas = document.getElementById('mediaCanvas');
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { alpha: true });
         const mediaCtx = mediaCanvas.getContext('2d');
         const colorInput = document.getElementById('colorInput');
         const soundToggle = document.getElementById('soundToggle');
@@ -266,29 +495,29 @@
         mediaCanvas.height = window.innerHeight;
 
         let particles = [];
-        let currentColor = '#ffffff';
+        let currentColor = '#00d4ff';
         let particlesEnabled = true;
         let soundEnabled = true;
         let videoPlaying = false;
         let videoPlaybackSpeed = 1;
         let imageDisplayMode = false;
+        let time = 0;
 
         // Web Audio API setup
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        // Array of random image URLs (high-quality images)
+        // Random images from Unsplash
         const randomImages = [
             'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop',
             'https://images.unsplash.com/photo-1469022563149-aa64dbd37dae?w=1200&h=800&fit=crop',
             'https://images.unsplash.com/photo-1433633713313-1b82e4696a7e?w=1200&h=800&fit=crop',
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop',
             'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1200&h=800&fit=crop',
             'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&h=800&fit=crop',
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop',
             'https://images.unsplash.com/photo-1501785888041-af3ee9c470a0?w=1200&h=800&fit=crop',
+            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop',
         ];
 
-        // Array of random video URLs (short clips from public sources)
+        // Video sources
         const randomVideos = [
             'https://commondatastorage.googleapis.com/gtv-videos-library/sample/BigBuckBunny.mp4',
             'https://commondatastorage.googleapis.com/gtv-videos-library/sample/ElephantsDream.mp4',
@@ -300,24 +529,44 @@
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.size = Math.random() * 5 + 1;
-                this.speedX = Math.random() * 3 - 1.5;
-                this.speedY = Math.random() * 3 - 1.5;
+                this.size = Math.random() * 6 + 2;
+                this.maxSize = this.size;
+                this.speedX = (Math.random() - 0.5) * 4;
+                this.speedY = (Math.random() - 0.5) * 4;
                 this.color = currentColor;
+                this.life = 1;
+                this.angle = Math.random() * Math.PI * 2;
+                this.spin = (Math.random() - 0.5) * 0.2;
             }
 
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
-
-                if (this.size > 0.2) this.size -= 0.1;
+                this.speedX *= 0.98;
+                this.speedY *= 0.98;
+                this.life -= 0.02;
+                this.angle += this.spin;
+                this.size = Math.max(0, this.maxSize * Math.max(0, this.life));
             }
 
             draw() {
+                if (this.size <= 0) return;
+                
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.life * 0.8);
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, Math.max(0.1, this.size), 0, Math.PI * 2);
                 ctx.fill();
+                
+                // Glow effect
+                if (this.life > 0.3) {
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = 1;
+                    ctx.globalAlpha = this.life * 0.3;
+                    ctx.stroke();
+                }
+                ctx.restore();
             }
         }
 
@@ -325,22 +574,22 @@
             if (!soundEnabled) return;
 
             const now = audioContext.currentTime;
-            const duration = 0.5;
+            const duration = 0.6;
 
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
             const filter = audioContext.createBiquadFilter();
 
             filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(2000, now);
+            filter.frequency.setValueAtTime(3000, now);
 
             oscillator.type = 'sine';
             oscillator.frequency.setValueAtTime(frequency, now);
-            oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.8, now + duration);
+            oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.7, now + duration);
 
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(0.3, now + 0.1);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+            gainNode.gain.linearRampToValueAtTime(0.25, now + 0.08);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
             oscillator.connect(filter);
             filter.connect(gainNode);
@@ -354,24 +603,24 @@
             if (!soundEnabled) return;
 
             const now = audioContext.currentTime;
-            const duration = 0.3;
+            const duration = 0.4;
 
-            for (let i = 0; i < 3; i++) {
+            for (let i = 0; i < 4; i++) {
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
                 const filter = audioContext.createBiquadFilter();
 
                 filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(2500, now);
+                filter.frequency.setValueAtTime(3500, now);
 
-                const baseFreq = 200 + i * 150;
-                oscillator.type = 'sine';
+                const baseFreq = 250 + i * 180;
+                oscillator.type = i % 2 === 0 ? 'sine' : 'triangle';
                 oscillator.frequency.setValueAtTime(baseFreq, now);
-                oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 0.6, now + duration);
+                oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, now + duration);
 
                 gainNode.gain.setValueAtTime(0, now);
-                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+                gainNode.gain.linearRampToValueAtTime(0.15, now + 0.06);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
                 oscillator.connect(filter);
                 filter.connect(gainNode);
@@ -389,14 +638,13 @@
         }
 
         function handleParticles() {
-            for (let i = 0; i < particles.length; i++) {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                if (particles[i].life <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
                 particles[i].update();
                 particles[i].draw();
-
-                if (particles[i].size <= 0.2) {
-                    particles.splice(i, 1);
-                    i--;
-                }
             }
         }
 
@@ -419,36 +667,36 @@
             const img = new Image();
             img.crossOrigin = 'anonymous';
             img.onload = function() {
-                const maxWidth = mediaCanvas.width;
-                const maxHeight = mediaCanvas.height;
+                const maxWidth = mediaCanvas.width * 0.9;
+                const maxHeight = mediaCanvas.height * 0.9;
                 let width = img.width;
                 let height = img.height;
 
-                // Scale to fit canvas
-                if (width > height) {
-                    if (width > maxWidth) {
-                        height = (height * maxWidth) / width;
-                        width = maxWidth;
-                    }
-                } else {
-                    if (height > maxHeight) {
-                        width = (width * maxHeight) / height;
-                        height = maxHeight;
-                    }
-                }
+                const widthRatio = maxWidth / width;
+                const heightRatio = maxHeight / height;
+                const ratio = Math.min(widthRatio, heightRatio);
+
+                width *= ratio;
+                height *= ratio;
 
                 const x = (mediaCanvas.width - width) / 2;
                 const y = (mediaCanvas.height - height) / 2;
 
-                mediaCtx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+                mediaCtx.fillStyle = 'rgba(10, 14, 39, 0.98)';
                 mediaCtx.fillRect(0, 0, mediaCanvas.width, mediaCanvas.height);
+                
+                // Draw frame
+                mediaCtx.strokeStyle = 'rgba(0, 212, 255, 0.3)';
+                mediaCtx.lineWidth = 2;
+                mediaCtx.strokeRect(x - 10, y - 10, width + 20, height + 20);
+                
                 mediaCtx.drawImage(img, x, y, width, height);
             };
             img.onerror = function() {
-                mediaCtx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+                mediaCtx.fillStyle = 'rgba(10, 14, 39, 0.98)';
                 mediaCtx.fillRect(0, 0, mediaCanvas.width, mediaCanvas.height);
-                mediaCtx.fillStyle = 'white';
-                mediaCtx.font = '24px Arial';
+                mediaCtx.fillStyle = '#00d4ff';
+                mediaCtx.font = 'bold 24px Raleway';
                 mediaCtx.textAlign = 'center';
                 mediaCtx.fillText('Loading image...', mediaCanvas.width / 2, mediaCanvas.height / 2);
             };
@@ -460,20 +708,19 @@
             mediaCanvas.style.display = 'block';
             closeHint.classList.add('show');
             videoPlaying = true;
-            speedControl.style.display = 'block';
+            speedControl.style.display = 'flex';
 
             hiddenVideo.src = videoSrc;
             hiddenVideo.currentTime = 0;
             hiddenVideo.playbackRate = videoPlaybackSpeed;
             
-            // Handle CORS and play attempt
             const playPromise = hiddenVideo.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    mediaCtx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+                    mediaCtx.fillStyle = 'rgba(10, 14, 39, 0.98)';
                     mediaCtx.fillRect(0, 0, mediaCanvas.width, mediaCanvas.height);
-                    mediaCtx.fillStyle = 'white';
-                    mediaCtx.font = '24px Arial';
+                    mediaCtx.fillStyle = '#00d4ff';
+                    mediaCtx.font = 'bold 24px Raleway';
                     mediaCtx.textAlign = 'center';
                     mediaCtx.fillText('Loading video...', mediaCanvas.width / 2, mediaCanvas.height / 2);
                 });
@@ -482,12 +729,12 @@
             function drawVideo() {
                 if (!videoPlaying) return;
 
-                mediaCtx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+                mediaCtx.fillStyle = 'rgba(10, 14, 39, 0.98)';
                 mediaCtx.fillRect(0, 0, mediaCanvas.width, mediaCanvas.height);
 
                 if (hiddenVideo.readyState >= 2) {
-                    const maxWidth = mediaCanvas.width * 0.9;
-                    const maxHeight = mediaCanvas.height * 0.9;
+                    const maxWidth = mediaCanvas.width * 0.85;
+                    const maxHeight = mediaCanvas.height * 0.85;
                     let width = hiddenVideo.videoWidth;
                     let height = hiddenVideo.videoHeight;
 
@@ -502,6 +749,11 @@
                         const x = (mediaCanvas.width - width) / 2;
                         const y = (mediaCanvas.height - height) / 2;
 
+                        // Draw frame
+                        mediaCtx.strokeStyle = 'rgba(0, 212, 255, 0.3)';
+                        mediaCtx.lineWidth = 2;
+                        mediaCtx.strokeRect(x - 10, y - 10, width + 20, height + 20);
+                        
                         mediaCtx.drawImage(hiddenVideo, x, y, width, height);
                     }
                 }
@@ -527,7 +779,6 @@
             hiddenVideo.currentTime = 0;
         }
 
-        // Video speed control
         videoSpeed.addEventListener('input', function(e) {
             videoPlaybackSpeed = parseFloat(e.target.value);
             speedValue.textContent = videoPlaybackSpeed + 'x';
@@ -536,10 +787,8 @@
             }
         });
 
-        // Close media on click
         mediaCanvas.addEventListener('click', closeMedia);
 
-        // Close media on ESC key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && imageDisplayMode) {
                 closeMedia();
@@ -547,9 +796,13 @@
         });
 
         function animate() {
+            time++;
+            
             if (!imageDisplayMode) {
-                ctx.fillStyle = 'rgba(102, 126, 234, 0.05)';
+                // Create gradient trail effect
+                ctx.fillStyle = 'rgba(10, 14, 39, 0.1)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
                 handleParticles();
             }
             requestAnimationFrame(animate);
@@ -557,19 +810,24 @@
 
         canvas.addEventListener('mousemove', (e) => {
             if (particlesEnabled && !imageDisplayMode) {
-                for (let i = 0; i < 5; i++) {
-                    particles.push(new Particle(e.x, e.y));
-                    if (i === 0) {
-                        playRandomMeditativeNote();
-                    }
+                for (let i = 0; i < 3; i++) {
+                    particles.push(new Particle(e.x + (Math.random() - 0.5) * 20, e.y + (Math.random() - 0.5) * 20));
+                }
+                if (Math.random() > 0.8) {
+                    playRandomMeditativeNote();
                 }
             }
         });
 
         canvas.addEventListener('click', (e) => {
             if (!imageDisplayMode) {
-                for (let i = 0; i < 30; i++) {
-                    particles.push(new Particle(e.x, e.y));
+                for (let i = 0; i < 50; i++) {
+                    const angle = (i / 50) * Math.PI * 2;
+                    const velocity = 5;
+                    const particle = new Particle(e.x, e.y);
+                    particle.speedX = Math.cos(angle) * velocity;
+                    particle.speedY = Math.sin(angle) * velocity;
+                    particles.push(particle);
                 }
                 playClickSound();
             }
@@ -580,7 +838,7 @@
         });
 
         function changeColor() {
-            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#a29bfe', '#fd79a8', '#fdcb6e'];
+            const colors = ['#00d4ff', '#7f39fb', '#ff006e', '#f9ca24', '#6c5ce7', '#a29bfe', '#fd79a8', '#ff1744'];
             currentColor = colors[Math.floor(Math.random() * colors.length)];
             colorInput.value = currentColor;
             playRandomMeditativeNote();
@@ -588,7 +846,7 @@
 
         function clearCanvas() {
             particles = [];
-            ctx.fillStyle = 'rgba(102, 126, 234, 1)';
+            ctx.fillStyle = 'rgba(10, 14, 39, 1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
