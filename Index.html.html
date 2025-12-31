@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Particle Canvas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+        }
+
+        h1 {
+            color: white;
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeIn 1s ease-in;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: #f0f0f0;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .info {
+            color: white;
+            margin-top: 20px;
+            font-size: 1.1em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .color-picker {
+            margin: 15px 0;
+        }
+
+        .color-picker label {
+            color: white;
+            margin-right: 10px;
+            font-size: 1.1em;
+        }
+
+        #colorInput {
+            width: 60px;
+            height: 40px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div class="container">
+        <h1>🎨 Interactive Particle Canvas</h1>
+        
+        <div class="controls">
+            <button onclick="changeColor()">Random Color</button>
+            <button onclick="clearCanvas()">Clear Canvas</button>
+            <button onclick="toggleParticles()">Toggle Particles</button>
+            
+            <div class="color-picker">
+                <label for="colorInput">Pick Color:</label>
+                <input type="color" id="colorInput" value="#ffffff">
+            </div>
+        </div>
+        
+        <div class="info">
+            Move your mouse to create particles!
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const colorInput = document.getElementById('colorInput');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        let currentColor = '#ffffff';
+        let particlesEnabled = true;
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 1;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.color = currentColor;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.size > 0.2) this.size -= 0.1;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function handleParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                if (particles[i].size <= 0.2) {
+                    particles.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(102, 126, 234, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            handleParticles();
+            requestAnimationFrame(animate);
+        }
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (particlesEnabled) {
+                for (let i = 0; i < 5; i++) {
+                    particles.push(new Particle(e.x, e.y));
+                }
+            }
+        });
+
+        canvas.addEventListener('click', (e) => {
+            for (let i = 0; i < 30; i++) {
+                particles.push(new Particle(e.x, e.y));
+            }
+        });
+
+        colorInput.addEventListener('input', (e) => {
+            currentColor = e.target.value;
+        });
+
+        function changeColor() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#a29bfe', '#fd79a8', '#fdcb6e'];
+            currentColor = colors[Math.floor(Math.random() * colors.length)];
+            colorInput.value = currentColor;
+        }
+
+        function clearCanvas() {
+            particles = [];
+            ctx.fillStyle = 'rgba(102, 126, 234, 1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function toggleParticles() {
+            particlesEnabled = !particlesEnabled;
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        animate();
+    </script>
+</body>
+</html>
