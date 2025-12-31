@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Particle Canvas with Sound</title>
+    <title>Interactive Particle Canvas with Random Media</title>
     <style>
         * {
             margin: 0;
@@ -29,7 +29,7 @@
 
         h1 {
             color: white;
-            font-size: 3em;
+            font-size: 2.8em;
             margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             animation: fadeIn 1s ease-in;
@@ -44,17 +44,30 @@
             margin-bottom: 20px;
         }
 
+        .control-section {
+            margin-bottom: 15px;
+        }
+
+        .control-section label {
+            color: white;
+            font-size: 1em;
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
         button {
             background: white;
             color: #667eea;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.1em;
+            padding: 12px 25px;
+            font-size: 1em;
             border-radius: 50px;
             cursor: pointer;
-            margin: 10px;
+            margin: 8px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-weight: 600;
         }
 
         button:hover {
@@ -81,10 +94,21 @@
             z-index: 1;
         }
 
+        #mediaCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            display: none;
+            background: rgba(0, 0, 0, 0.95);
+        }
+
         .info {
             color: white;
-            margin-top: 20px;
-            font-size: 1.1em;
+            margin-top: 15px;
+            font-size: 1.05em;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
@@ -94,13 +118,13 @@
         }
 
         .color-picker {
-            margin: 15px 0;
+            margin: 10px 0;
         }
 
         .color-picker label {
             color: white;
             margin-right: 10px;
-            font-size: 1.1em;
+            font-size: 1em;
         }
 
         #colorInput {
@@ -109,63 +133,168 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
+            vertical-align: middle;
         }
 
-        .sound-toggle {
-            display: inline-block;
-            margin: 10px;
+        .media-controls {
+            margin-top: 15px;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .video-speed-control {
+            margin: 10px 0;
+        }
+
+        .video-speed-control label {
+            color: white;
+            margin-right: 10px;
+            font-size: 1em;
+        }
+
+        .video-speed-control input[type="range"] {
+            width: 150px;
+            cursor: pointer;
+            vertical-align: middle;
         }
 
         .sound-status {
             color: white;
-            font-size: 0.9em;
+            font-size: 0.95em;
             margin-top: 10px;
+        }
+
+        .close-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            text-align: center;
+            z-index: 3;
+            display: none;
+        }
+
+        .close-hint.show {
+            display: block;
+        }
+
+        .hidden-media {
+            display: none;
         }
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
+    <canvas id="mediaCanvas"></canvas>
     
+    <div class="close-hint" id="closeHint">Click anywhere or press ESC to close</div>
+
     <div class="container">
-        <h1>🎨 Interactive Particle Canvas</h1>
+        <h1>🎨 Particle Canvas Pro</h1>
         
         <div class="controls">
-            <button onclick="changeColor()">Random Color</button>
-            <button onclick="clearCanvas()">Clear Canvas</button>
-            <button onclick="toggleParticles()">Toggle Particles</button>
-            <button id="soundToggle" class="active" onclick="toggleSound()">🔊 Sound On</button>
-            
-            <div class="color-picker">
-                <label for="colorInput">Pick Color:</label>
-                <input type="color" id="colorInput" value="#ffffff">
+            <!-- Particle Controls -->
+            <div class="control-section">
+                <label>Particle Effects</label>
+                <button onclick="changeColor()">🎨 Random Color</button>
+                <button onclick="clearCanvas()">🗑️ Clear Canvas</button>
+                <button onclick="toggleParticles()">✨ Toggle Particles</button>
+            </div>
+
+            <!-- Sound Controls -->
+            <div class="control-section">
+                <label>Audio</label>
+                <button id="soundToggle" class="active" onclick="toggleSound()">🔊 Sound On</button>
+            </div>
+
+            <!-- Color Picker -->
+            <div class="control-section">
+                <div class="color-picker">
+                    <label for="colorInput">Pick Color:</label>
+                    <input type="color" id="colorInput" value="#ffffff">
+                </div>
+            </div>
+
+            <!-- Random Media Display -->
+            <div class="control-section">
+                <label>Display Random Media</label>
+                <button onclick="displayRandomImage()">📸 Show Random Image</button>
+                <button onclick="displayRandomVideo()">🎬 Show Random Video</button>
+            </div>
+
+            <!-- Video Speed Control (hidden by default) -->
+            <div class="video-speed-control" id="speedControl" style="display: none;">
+                <label for="videoSpeed">Playback Speed:</label>
+                <input type="range" id="videoSpeed" min="0.5" max="3" step="0.5" value="1">
+                <span id="speedValue">1x</span>
             </div>
 
             <div class="sound-status">
-                Move your mouse & click to create particles with sound!
+                🎵 Move your mouse & click to create particles with sound!<br>
+                📸 Click "Show Random Image/Video" to display beautiful media instantly!
             </div>
         </div>
         
         <div class="info">
-            🎵 Every particle creates a unique musical note
+            🎵 Every particle creates a unique musical note | 🎨 Experience Interactive Media
         </div>
     </div>
 
+    <!-- Hidden media elements -->
+    <img id="hiddenImage" class="hidden-media">
+    <video id="hiddenVideo" class="hidden-media" playsinline></video>
+
     <script>
         const canvas = document.getElementById('canvas');
+        const mediaCanvas = document.getElementById('mediaCanvas');
         const ctx = canvas.getContext('2d');
+        const mediaCtx = mediaCanvas.getContext('2d');
         const colorInput = document.getElementById('colorInput');
         const soundToggle = document.getElementById('soundToggle');
+        const videoSpeed = document.getElementById('videoSpeed');
+        const speedValue = document.getElementById('speedValue');
+        const speedControl = document.getElementById('speedControl');
+        const closeHint = document.getElementById('closeHint');
+        const hiddenImage = document.getElementById('hiddenImage');
+        const hiddenVideo = document.getElementById('hiddenVideo');
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        mediaCanvas.width = window.innerWidth;
+        mediaCanvas.height = window.innerHeight;
 
         let particles = [];
         let currentColor = '#ffffff';
         let particlesEnabled = true;
         let soundEnabled = true;
+        let videoPlaying = false;
+        let videoPlaybackSpeed = 1;
+        let imageDisplayMode = false;
 
         // Web Audio API setup
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Array of random image URLs (high-quality images)
+        const randomImages = [
+            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop',
+            'https://images.unsplash.com/photo-1469022563149-aa64dbd37dae?w=1200&h=800&fit=crop',
+            'https://images.unsplash.com/photo-1433633713313-1b82e4696a7e?w=1200&h=800&fit=crop',
+            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop',
+            'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1200&h=800&fit=crop',
+            'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&h=800&fit=crop',
+            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop',
+            'https://images.unsplash.com/photo-1501785888041-af3ee9c470a0?w=1200&h=800&fit=crop',
+        ];
+
+        // Array of random video URLs (short clips from public sources)
+        const randomVideos = [
+            'https://commondatastorage.googleapis.com/gtv-videos-library/sample/BigBuckBunny.mp4',
+            'https://commondatastorage.googleapis.com/gtv-videos-library/sample/ElephantsDream.mp4',
+            'https://commondatastorage.googleapis.com/gtv-videos-library/sample/ForBiggerBlazes.mp4',
+            'https://commondatastorage.googleapis.com/gtv-videos-library/sample/ForBiggerEscapes.mp4',
+        ];
 
         class Particle {
             constructor(x, y) {
@@ -198,31 +327,25 @@
             const now = audioContext.currentTime;
             const duration = 0.5;
 
-            // Create oscillator for tone
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
             const filter = audioContext.createBiquadFilter();
 
-            // Set up the filter for smooth, meditative quality
             filter.type = 'lowpass';
             filter.frequency.setValueAtTime(2000, now);
 
-            // Oscillator setup - use sine for smooth, meditative sound
             oscillator.type = 'sine';
             oscillator.frequency.setValueAtTime(frequency, now);
             oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.8, now + duration);
 
-            // Envelope - slow attack and release for meditative feel
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(0.3, now + 0.1); // Attack
-            gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration); // Release
+            gainNode.gain.linearRampToValueAtTime(0.3, now + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
 
-            // Connect nodes
             oscillator.connect(filter);
             filter.connect(gainNode);
             gainNode.connect(audioContext.destination);
 
-            // Start and stop
             oscillator.start(now);
             oscillator.stop(now + duration);
         }
@@ -233,7 +356,6 @@
             const now = audioContext.currentTime;
             const duration = 0.3;
 
-            // Create multiple tones for a richer sound
             for (let i = 0; i < 3; i++) {
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
@@ -261,7 +383,6 @@
         }
 
         function playRandomMeditativeNote() {
-            // Pentatonic scale frequencies for harmonious sounds
             const pentatonicFreqs = [261.63, 293.66, 329.63, 392.00, 440.00, 493.88, 587.33, 659.25, 783.99];
             const frequency = pentatonicFreqs[Math.floor(Math.random() * pentatonicFreqs.length)];
             playMeditativeSound(frequency);
@@ -279,16 +400,163 @@
             }
         }
 
-        function animate() {
-            ctx.fillStyle = 'rgba(102, 126, 234, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function displayRandomImage() {
+            const randomImage = randomImages[Math.floor(Math.random() * randomImages.length)];
+            displayImage(randomImage);
+        }
+
+        function displayRandomVideo() {
+            const randomVideo = randomVideos[Math.floor(Math.random() * randomVideos.length)];
+            displayVideo(randomVideo);
+        }
+
+        function displayImage(imageSrc) {
+            imageDisplayMode = true;
+            mediaCanvas.style.display = 'block';
+            closeHint.classList.add('show');
+            speedControl.style.display = 'none';
+
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function() {
+                const maxWidth = mediaCanvas.width;
+                const maxHeight = mediaCanvas.height;
+                let width = img.width;
+                let height = img.height;
+
+                // Scale to fit canvas
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = (width * maxHeight) / height;
+                        height = maxHeight;
+                    }
+                }
+
+                const x = (mediaCanvas.width - width) / 2;
+                const y = (mediaCanvas.height - height) / 2;
+
+                mediaCtx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+                mediaCtx.fillRect(0, 0, mediaCanvas.width, mediaCanvas.height);
+                mediaCtx.drawImage(img, x, y, width, height);
+            };
+            img.onerror = function() {
+                mediaCtx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+                mediaCtx.fillRect(0, 0, mediaCanvas.width, mediaCanvas.height);
+                mediaCtx.fillStyle = 'white';
+                mediaCtx.font = '24px Arial';
+                mediaCtx.textAlign = 'center';
+                mediaCtx.fillText('Loading image...', mediaCanvas.width / 2, mediaCanvas.height / 2);
+            };
+            img.src = imageSrc;
+        }
+
+        function displayVideo(videoSrc) {
+            imageDisplayMode = true;
+            mediaCanvas.style.display = 'block';
+            closeHint.classList.add('show');
+            videoPlaying = true;
+            speedControl.style.display = 'block';
+
+            hiddenVideo.src = videoSrc;
+            hiddenVideo.currentTime = 0;
+            hiddenVideo.playbackRate = videoPlaybackSpeed;
             
-            handleParticles();
+            // Handle CORS and play attempt
+            const playPromise = hiddenVideo.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    mediaCtx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+                    mediaCtx.fillRect(0, 0, mediaCanvas.width, mediaCanvas.height);
+                    mediaCtx.fillStyle = 'white';
+                    mediaCtx.font = '24px Arial';
+                    mediaCtx.textAlign = 'center';
+                    mediaCtx.fillText('Loading video...', mediaCanvas.width / 2, mediaCanvas.height / 2);
+                });
+            }
+
+            function drawVideo() {
+                if (!videoPlaying) return;
+
+                mediaCtx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+                mediaCtx.fillRect(0, 0, mediaCanvas.width, mediaCanvas.height);
+
+                if (hiddenVideo.readyState >= 2) {
+                    const maxWidth = mediaCanvas.width * 0.9;
+                    const maxHeight = mediaCanvas.height * 0.9;
+                    let width = hiddenVideo.videoWidth;
+                    let height = hiddenVideo.videoHeight;
+
+                    if (width && height) {
+                        const widthRatio = maxWidth / width;
+                        const heightRatio = maxHeight / height;
+                        const ratio = Math.min(widthRatio, heightRatio);
+
+                        width *= ratio;
+                        height *= ratio;
+
+                        const x = (mediaCanvas.width - width) / 2;
+                        const y = (mediaCanvas.height - height) / 2;
+
+                        mediaCtx.drawImage(hiddenVideo, x, y, width, height);
+                    }
+                }
+
+                if (!hiddenVideo.ended && videoPlaying) {
+                    requestAnimationFrame(drawVideo);
+                } else if (hiddenVideo.ended) {
+                    closeMedia();
+                }
+            }
+
+            drawVideo();
+        }
+
+        function closeMedia() {
+            mediaCanvas.style.display = 'none';
+            mediaCtx.clearRect(0, 0, mediaCanvas.width, mediaCanvas.height);
+            imageDisplayMode = false;
+            videoPlaying = false;
+            speedControl.style.display = 'none';
+            closeHint.classList.remove('show');
+            hiddenVideo.pause();
+            hiddenVideo.currentTime = 0;
+        }
+
+        // Video speed control
+        videoSpeed.addEventListener('input', function(e) {
+            videoPlaybackSpeed = parseFloat(e.target.value);
+            speedValue.textContent = videoPlaybackSpeed + 'x';
+            if (hiddenVideo.src) {
+                hiddenVideo.playbackRate = videoPlaybackSpeed;
+            }
+        });
+
+        // Close media on click
+        mediaCanvas.addEventListener('click', closeMedia);
+
+        // Close media on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && imageDisplayMode) {
+                closeMedia();
+            }
+        });
+
+        function animate() {
+            if (!imageDisplayMode) {
+                ctx.fillStyle = 'rgba(102, 126, 234, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                handleParticles();
+            }
             requestAnimationFrame(animate);
         }
 
         canvas.addEventListener('mousemove', (e) => {
-            if (particlesEnabled) {
+            if (particlesEnabled && !imageDisplayMode) {
                 for (let i = 0; i < 5; i++) {
                     particles.push(new Particle(e.x, e.y));
                     if (i === 0) {
@@ -299,10 +567,12 @@
         });
 
         canvas.addEventListener('click', (e) => {
-            for (let i = 0; i < 30; i++) {
-                particles.push(new Particle(e.x, e.y));
+            if (!imageDisplayMode) {
+                for (let i = 0; i < 30; i++) {
+                    particles.push(new Particle(e.x, e.y));
+                }
+                playClickSound();
             }
-            playClickSound();
         });
 
         colorInput.addEventListener('input', (e) => {
@@ -335,6 +605,8 @@
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            mediaCanvas.width = window.innerWidth;
+            mediaCanvas.height = window.innerHeight;
         });
 
         animate();
